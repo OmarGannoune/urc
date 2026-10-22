@@ -1,6 +1,6 @@
 import {create} from "zustand";
-import type {Message, PublicUser, Room} from "../model/common";
-import {fetchMessages, fetchRooms, fetchUsers, sendMessage} from "../messages/messagesApi";
+import type {Message, PublicUser, ReplyRef, Room} from "../model/common";
+import {fetchMessages, fetchRooms, fetchUsers, sendMessage, toggleReaction} from "../messages/messagesApi";
 
 export interface Selection {
     type: "user" | "room";
@@ -18,7 +18,8 @@ interface MessagingState {
     select: (selection: Selection) => void;
     clearSelection: () => void;
     refreshMessages: () => Promise<void>;
-    send: (content: string, image?: string) => Promise<void>;
+    send: (content: string, image?: string, reply?: ReplyRef | null) => Promise<void>;
+    react: (messageId: string, emoji: string) => Promise<void>;
 }
 
 export const useMessaging = create<MessagingState>((set, get) => ({
@@ -64,13 +65,26 @@ export const useMessaging = create<MessagingState>((set, get) => ({
         }
     },
 
-    send: async (content, image) => {
+    send: async (content, image, reply) => {
         const selection = get().selection;
         if (selection === null || (content.trim() === "" && !image)) {
             return;
         }
         try {
-            await sendMessage(content, selection, image);
+            await sendMessage(content, selection, image, reply);
+            await get().refreshMessages();
+        } catch (error) {
+            set({error: (error as Error).message});
+        }
+    },
+
+    react: async (messageId, emoji) => {
+        const selection = get().selection;
+        if (selection === null) {
+            return;
+        }
+        try {
+            await toggleReaction(messageId, emoji, selection);
             await get().refreshMessages();
         } catch (error) {
             set({error: (error as Error).message});

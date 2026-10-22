@@ -31,12 +31,24 @@ export interface Room {
     created_on?: string;
 }
 
-export interface Message {
+export interface ReplyRef {
+    id: string;
     from: number;
     fromName: string;
     content: string;
     date: string;
     image?: string | null;
+}
+
+export interface Message {
+    id?: string;
+    from: number;
+    fromName: string;
+    content: string;
+    date: string;
+    image?: string | null;
+    reply?: ReplyRef | null;
+    reactions?: Record<string, number[]>;
 }
 
 

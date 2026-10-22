@@ -1,4 +1,4 @@
-import type {Message, PublicUser, Room} from "../model/common";
+import type {Message, PublicUser, ReplyRef, Room} from "../model/common";
 import {useSession} from "../store/session";
 
 function authHeaders(): Record<string, string> {
@@ -39,11 +39,23 @@ export async function fetchMessages(target: {type: "user" | "room", id: number})
     return (await response.json() as Message[]).reverse();
 }
 
-export async function sendMessage(content: string, target: {type: "user" | "room", id: number}, image?: string): Promise<void> {
+export async function sendMessage(content: string, target: {type: "user" | "room", id: number}, image?: string, reply?: ReplyRef | null): Promise<void> {
     const body = target.type === "room"
-        ? {content, image, targetRoomId: target.id}
-        : {content, image, targetUserId: target.id};
+        ? {content, image, reply, targetRoomId: target.id}
+        : {content, image, reply, targetUserId: target.id};
     const response = await handle(await fetch("/api/message", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+    }));
+    await response.json();
+}
+
+export async function toggleReaction(messageId: string, emoji: string, target: {type: "user" | "room", id: number}): Promise<void> {
+    const body = target.type === "room"
+        ? {messageId, emoji, targetRoomId: target.id}
+        : {messageId, emoji, targetUserId: target.id};
+    const response = await handle(await fetch("/api/reaction", {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify(body),

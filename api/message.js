@@ -1,24 +1,8 @@
 import {getConnecterUser, triggerNotConnected} from "../lib/session";
 import { Redis } from '@upstash/redis';
+import {conversationKey, messageKey, parseReactions, sanitizeReply} from "../lib/conversation";
 
 const redis = Redis.fromEnv();
-
-function errorResponse(status, code, message) {
-    return new Response(JSON.stringify({code, message}), {
-        status,
-        headers: {'content-type': 'application/json'},
-    });
-}
-
-function userConversationKey(idA, idB) {
-    const min = Math.min(Number(idA), Number(idB));
-    const max = Math.max(Number(idA), Number(idB));
-    return `conv:${min}:${max}`;
-}
-
-function roomConversationKey(roomId) {
-    return `room:${roomId}`;
-}
 
 export default async (request, response) => {
     try {
@@ -31,22 +15,24 @@ export default async (request, response) => {
 
         if (request.method === "GET") {
             const {user_id, room_id} = request.query;
-            let key;
-            if (room_id !== undefined) {
-                key = roomConversationKey(room_id);
-            } else if (user_id !== undefined) {
-                key = userConversationKey(user.id, user_id);
-            } else {
+            if (room_id === undefined && user_id === undefined) {
                 response.status(400).json({code: "MISSING_TARGET", message: "user_id ou room_id requis"});
                 return;
             }
+            const key = conversationKey({roomId: room_id, userIdA: user.id, userIdB: user_id});
             const messages = await redis.lrange(key, 0, -1);
-            response.status(200).json(messages);
+            const allReactions = (await redis.hgetall(`react:${key}`)) ?? {};
+            const enriched = messages.map((message) => ({
+                ...message,
+                id: messageKey(message),
+                reactions: parseReactions(allReactions[messageKey(message)]),
+            }));
+            response.status(200).json(enriched);
             return;
         }
 
         if (request.method === "POST") {
-            const {content, image, targetUserId, targetRoomId} = request.body;
+            const {content, image, reply, targetUserId, targetRoomId} = request.body;
             if (!content && !image) {
                 response.status(400).json({code: "MISSING_CONTENT", message: "Message vide"});
                 return;
@@ -55,27 +41,27 @@ export default async (request, response) => {
                 response.status(400).json({code: "BAD_IMAGE", message: "Image invalide"});
                 return;
             }
-            let key;
-            if (targetRoomId !== undefined && targetRoomId !== null) {
-                key = roomConversationKey(targetRoomId);
-            } else if (targetUserId !== undefined && targetUserId !== null) {
-                key = userConversationKey(user.id, targetUserId);
-            } else {
-                response.status(400).json({code: "MISSING_TARGET", message: "targetUserId ou targetRoomId requis"});
-                return;
+            if (targetRoomId === undefined || targetRoomId === null) {
+                if (targetUserId === undefined || targetUserId === null) {
+                    response.status(400).json({code: "MISSING_TARGET", message: "targetUserId ou targetRoomId requis"});
+                    return;
+                }
             }
+            const key = conversationKey({roomId: targetRoomId, userIdA: user.id, userIdB: targetUserId});
 
             const message = {
+                id: crypto.randomUUID(),
                 from: user.id,
                 fromName: user.username,
                 content: content ?? "",
                 date: new Date().toISOString(),
                 image: image ?? null,
+                reply: sanitizeReply(reply),
             };
             await redis.lpush(key, message);
             await redis.expire(key, 86400);
 
-            response.status(200).json({ok: true});
+            response.status(200).json({ok: true, id: message.id});
             return;
         }
 

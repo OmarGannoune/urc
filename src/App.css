@@ -375,6 +375,7 @@ a:hover {
 }
 
 .message {
+  position: relative;
   max-width: 68%;
   margin-bottom: 12px;
   padding: 10px 14px;
@@ -439,4 +440,166 @@ a:hover {
 .message-form {
   padding-top: 14px;
   border-top: 1px solid var(--r-border);
+}
+
+/* ---- réponse ---- */
+
+.reply-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-left: 3px solid var(--r-accent);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  max-width: 320px;
+  overflow: hidden;
+}
+
+.message-received .reply-quote {
+  background: var(--r-surface-2);
+}
+
+.reply-quote-author {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.reply-quote-text {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reply-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: var(--r-radius-sm);
+  color: var(--r-muted);
+}
+
+.reply-bar-text {
+  flex: 1;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reply-bar-text b {
+  color: var(--r-text);
+}
+
+/* ---- actions & réactions ---- */
+
+.message-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 6px;
+  position: relative;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+}
+
+.message:hover .message-actions,
+.message-actions:focus-within {
+  opacity: 1;
+}
+
+.message-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.message-action-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.reaction-picker {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  z-index: 10;
+}
+
+.reaction-picker button {
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 5px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.12s ease;
+}
+
+.reaction-picker button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.2);
+}
+
+.reaction-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.reaction-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  color: var(--r-text);
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.reaction-chip:hover {
+  border-color: var(--r-muted);
+}
+
+.reaction-chip.mine {
+  background: var(--r-accent-soft);
+  border-color: var(--r-accent);
+}
+
+.message-sent .reaction-chip {
+  background: rgba(0, 0, 0, 0.28);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.message-sent .reaction-chip.mine {
+  background: rgba(0, 0, 0, 0.45);
+  border-color: #fff;
 }
