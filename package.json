@@ -13,13 +13,16 @@
     "@upstash/redis": "^1.35.5",
     "@vercel/edge": "^1.2.2",
     "@vercel/postgres": "^0.10.0",
+    "bootstrap": "^5.3.8",
     "crypto-js": "^4.2.0",
     "pusher-js": "^8.6.0",
     "react": "^19.3.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4",
     "vercel": "^48.4.1",
-    "web-vitals": "^6.2.2"
+    "web-vitals": "^6.2.2",
+    "zustand": "^5.0.16"
   },
   "scripts": {
     "dev": "vite",
