@@ -6,6 +6,7 @@ import type {Selection} from "../store/messaging";
 import {useSession} from "../store/session";
 import {UsersList} from "./UsersList";
 import {Conversation} from "./Conversation";
+import {ChatTeardropText, SignOut} from "@phosphor-icons/react";
 
 export function Messages() {
     const {type, id} = useParams();
@@ -77,10 +78,15 @@ export function Messages() {
     return (
         <div className="messages-page">
             <Navbar className="messages-header" expand="sm">
-                <Navbar.Brand as={Link} to="/" className="messages-brand">UBO Relay Chat</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" className="messages-brand">
+                    <span className="logo-mark logo-mark-sm"><ChatTeardropText size={16} weight="fill"/></span>
+                    UBO Relay Chat
+                </Navbar.Brand>
                 <div className="messages-header-right">
                     <span className="messages-user">{username}</span>
-                    <Button size="sm" variant="outline-danger" onClick={logout}>Se déconnecter</Button>
+                    <Button size="sm" variant="outline-danger" onClick={logout}>
+                        <SignOut size={15}/> Se déconnecter
+                    </Button>
                 </div>
             </Navbar>
             <Container fluid className="messages-body">

@@ -3,6 +3,7 @@ import {Form, Button, InputGroup} from "react-bootstrap";
 import {useMessaging} from "../store/messaging";
 import {useSession} from "../store/session";
 import {uploadImage} from "./messagesApi";
+import {Image as ImageIcon, PaperPlaneRight, X, Chats} from "@phosphor-icons/react";
 
 export function Conversation() {
     const selection = useMessaging((state) => state.selection);
@@ -22,7 +23,12 @@ export function Conversation() {
     }, [messages]);
 
     if (selection === null) {
-        return <p className="text-muted text-center mt-5">Choisissez une conversation à gauche</p>;
+        return (
+            <div className="empty-state">
+                <Chats size={44} weight="duotone"/>
+                <p>Choisissez une conversation à gauche</p>
+            </div>
+        );
     }
 
     const title = selection.type === "room"
@@ -62,7 +68,10 @@ export function Conversation() {
 
             <div className="message-list">
                 {messages.length === 0 &&
-                    <p className="text-muted text-center mt-3">Aucun message</p>
+                    <div className="empty-state">
+                        <Chats size={32} weight="duotone"/>
+                        <p>Aucun message</p>
+                    </div>
                 }
                 {messages.map((message, index) => (
                     <div
@@ -86,7 +95,9 @@ export function Conversation() {
             {image &&
                 <div className="image-preview">
                     <img src={image} alt="aperçu"/>
-                    <Button size="sm" variant="outline-secondary" onClick={() => setImage(undefined)}>Retirer</Button>
+                    <Button size="sm" variant="outline-secondary" onClick={() => setImage(undefined)}>
+                        <X size={14}/> Retirer
+                    </Button>
                 </div>
             }
 
@@ -102,7 +113,7 @@ export function Conversation() {
                         disabled={uploading}
                         onClick={() => fileRef.current?.click()}
                     >
-                        {uploading ? "Envoi..." : "Image"}
+                        <ImageIcon size={16} weight="fill"/> {uploading ? "Envoi..." : "Image"}
                     </Button>
                     <input
                         ref={fileRef}
@@ -112,7 +123,9 @@ export function Conversation() {
                         onChange={handleFile}
                     />
                 </InputGroup>
-                <Button type="submit" variant="primary" className="w-100">Envoyer</Button>
+                <Button type="submit" variant="primary" className="w-100">
+                    <PaperPlaneRight size={16} weight="fill"/> Envoyer
+                </Button>
             </Form>
         </div>
     );

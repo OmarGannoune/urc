@@ -3,6 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {registerUser} from "./registerApi";
 import {CustomError} from "../model/CustomError";
 import {Button, Card, Form, Alert, Container} from "react-bootstrap";
+import {UserPlus} from "@phosphor-icons/react";
 
 export function Register() {
 
@@ -45,6 +46,9 @@ export function Register() {
         <Container className="auth-page">
             <Card className="auth-card">
                 <Card.Body>
+                    <div className="auth-logo">
+                        <span className="logo-mark"><UserPlus size={22} weight="fill"/></span>
+                    </div>
                     <Card.Title className="text-center mb-4">Créer un compte</Card.Title>
                     {error.message &&
                         <Alert variant="danger">{error.message}</Alert>
@@ -62,10 +66,10 @@ export function Register() {
                             <Form.Label>Mot de passe</Form.Label>
                             <Form.Control name="password" type="password" placeholder="mot de passe"/>
                         </Form.Group>
-                        <Button variant="success" type="submit" className="w-100">S'inscrire</Button>
+                        <Button variant="primary" type="submit" className="w-100">S'inscrire</Button>
                     </Form>
                     <div className="text-center mt-3">
-                        <Link to="/login">Déjà un compte ? Se connecter</Link>
+                        <Link to="/login" className="auth-link">Déjà un compte ? Se connecter</Link>
                     </div>
                 </Card.Body>
             </Card>

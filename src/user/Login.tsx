@@ -5,6 +5,7 @@ import type {Session} from "../model/common";
 import {CustomError} from "../model/CustomError";
 import {useSession} from "../store/session";
 import {Button, Card, Form, Alert, Container} from "react-bootstrap";
+import {ChatTeardropText} from "@phosphor-icons/react";
 
 export function Login() {
 
@@ -28,8 +29,11 @@ export function Login() {
         <Container className="auth-page">
             <Card className="auth-card">
                 <Card.Body>
+                    <div className="auth-logo">
+                        <span className="logo-mark"><ChatTeardropText size={22} weight="fill"/></span>
+                    </div>
                     <Card.Title className="text-center mb-1">UBO Relay Chat</Card.Title>
-                    <p className="text-center text-muted mb-4">Connectez-vous pour discuter</p>
+                    <p className="auth-subtitle text-center mb-4">Connectez-vous pour discuter</p>
                     {error.message &&
                         <Alert variant="danger">{error.message}</Alert>
                     }
@@ -45,7 +49,7 @@ export function Login() {
                         <Button variant="primary" type="submit" className="w-100">Connexion</Button>
                     </Form>
                     <div className="text-center mt-3">
-                        <Link to="/register">Pas de compte ? S'inscrire</Link>
+                        <Link to="/register" className="auth-link">Pas de compte ? S'inscrire</Link>
                     </div>
                 </Card.Body>
             </Card>

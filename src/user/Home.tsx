@@ -2,6 +2,7 @@ import React from "react";
 import {Container, Card, Button} from "react-bootstrap";
 import {Navigate, useNavigate} from "react-router-dom";
 import {useSession} from "../store/session";
+import {ChatTeardropText, ChatsCircle, SignOut} from "@phosphor-icons/react";
 
 export function Home() {
     const username = useSession((state) => state.username);
@@ -22,12 +23,17 @@ export function Home() {
         <Container className="auth-page">
             <Card className="auth-card">
                 <Card.Body className="text-center">
-                    <Card.Title>Bienvenue {username} 👋</Card.Title>
-                    <p className="text-muted">La messagerie est prête.</p>
+                    <div className="auth-logo">
+                        <span className="logo-mark"><ChatTeardropText size={22} weight="fill"/></span>
+                    </div>
+                    <Card.Title>Bienvenue {username}</Card.Title>
+                    <p className="auth-subtitle">La messagerie est prête.</p>
                     <Button variant="primary" onClick={() => navigate("/messages")} className="me-2">
-                        Ouvrir la messagerie
+                        <ChatsCircle size={18} weight="fill"/> Ouvrir la messagerie
                     </Button>
-                    <Button variant="outline-danger" onClick={logout}>Se déconnecter</Button>
+                    <Button variant="outline-danger" onClick={logout}>
+                        <SignOut size={18}/> Se déconnecter
+                    </Button>
                 </Card.Body>
             </Card>
         </Container>

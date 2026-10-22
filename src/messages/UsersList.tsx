@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {ListGroup} from "react-bootstrap";
 import {useMessaging} from "../store/messaging";
 import {useSession} from "../store/session";
+import {Hash} from "@phosphor-icons/react";
 
 export function UsersList() {
     const users = useMessaging((state) => state.users);
@@ -16,6 +17,8 @@ export function UsersList() {
     const itemClass = (itemType: string, itemId: number) =>
         (type === itemType && Number(id) === itemId) ? "active-conversation" : "";
 
+    const initials = (name: string) => name.slice(0, 2).toUpperCase();
+
     return (
         <div className="users-list">
             <h6 className="list-title">Salons</h6>
@@ -27,7 +30,10 @@ export function UsersList() {
                         className={itemClass("room", room.room_id)}
                         onClick={() => navigate(`/messages/room/${room.room_id}`)}
                     >
-                        # {room.name}
+                        <span className="avatar avatar-room"><Hash size={16} weight="fill"/></span>
+                        <div className="list-item-info">
+                            <div className="list-item-name">{room.name}</div>
+                        </div>
                     </ListGroup.Item>
                 ))}
             </ListGroup>
@@ -41,14 +47,17 @@ export function UsersList() {
                         className={itemClass("user", user.user_id)}
                         onClick={() => navigate(`/messages/user/${user.user_id}`)}
                     >
-                        <div>{user.username}</div>
-                        {user.last_login &&
-                            <small className="text-muted">vu le {user.last_login}</small>
-                        }
+                        <span className="avatar">{initials(user.username)}</span>
+                        <div className="list-item-info">
+                            <div className="list-item-name">{user.username}</div>
+                            {user.last_login &&
+                                <div className="list-item-meta">vu le {user.last_login}</div>
+                            }
+                        </div>
                     </ListGroup.Item>
                 ))}
                 {others.length === 0 &&
-                    <ListGroup.Item className="text-muted">Aucun autre utilisateur</ListGroup.Item>
+                    <div className="empty-hint">Aucun autre utilisateur</div>
                 }
             </ListGroup>
         </div>
