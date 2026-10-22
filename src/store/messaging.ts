@@ -1,0 +1,79 @@
+import {create} from "zustand";
+import type {Message, PublicUser, Room} from "../model/common";
+import {fetchMessages, fetchRooms, fetchUsers, sendMessage} from "../messages/messagesApi";
+
+export interface Selection {
+    type: "user" | "room";
+    id: number;
+}
+
+interface MessagingState {
+    users: PublicUser[];
+    rooms: Room[];
+    selection: Selection | null;
+    messages: Message[];
+    error: string;
+    loadUsers: () => Promise<void>;
+    loadRooms: () => Promise<void>;
+    select: (selection: Selection) => void;
+    clearSelection: () => void;
+    refreshMessages: () => Promise<void>;
+    send: (content: string) => Promise<void>;
+}
+
+export const useMessaging = create<MessagingState>((set, get) => ({
+    users: [],
+    rooms: [],
+    selection: null,
+    messages: [],
+    error: "",
+
+    loadUsers: async () => {
+        try {
+            set({users: await fetchUsers(), error: ""});
+        } catch (error) {
+            set({error: (error as Error).message});
+        }
+    },
+
+    loadRooms: async () => {
+        try {
+            set({rooms: await fetchRooms(), error: ""});
+        } catch (error) {
+            set({error: (error as Error).message});
+        }
+    },
+
+    select: (selection) => {
+        set({selection, messages: [], error: ""});
+        get().refreshMessages();
+    },
+
+    clearSelection: () => set({selection: null, messages: []}),
+
+    refreshMessages: async () => {
+        const selection = get().selection;
+        if (selection === null) {
+            return;
+        }
+        try {
+            const messages = await fetchMessages(selection);
+            set({messages, error: ""});
+        } catch (error) {
+            set({error: (error as Error).message});
+        }
+    },
+
+    send: async (content) => {
+        const selection = get().selection;
+        if (selection === null || content.trim() === "") {
+            return;
+        }
+        try {
+            await sendMessage(content, selection);
+            await get().refreshMessages();
+        } catch (error) {
+            set({error: (error as Error).message});
+        }
+    },
+}));

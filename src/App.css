@@ -15,3 +15,134 @@
   border-radius: 6px;
   box-shadow: none;
 }
+
+/* ---- messagerie ---- */
+
+.messages-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.messages-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.messages-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333 !important;
+  text-decoration: none;
+}
+
+.messages-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.messages-user {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.messages-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
+
+.users-col {
+  border-right: 1px solid #ddd;
+  padding: 12px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.conversation-col {
+  padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.list-title {
+  margin: 14px 0 6px;
+  color: #666;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.users-list .list-group-item {
+  border: none;
+  border-radius: 4px !important;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.users-list .list-group-item:hover {
+  background: #f7f7f7;
+}
+
+.active-conversation {
+  background: #eee;
+  font-weight: 600;
+}
+
+.conversation {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.conversation-title {
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.05rem;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: 12px;
+  padding: 7px 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.message-sent {
+  margin-left: auto;
+  background: #eef3ff;
+  border-color: #dbe4ff;
+}
+
+.message-meta {
+  font-size: 0.72rem;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.message-content {
+  color: #222;
+  word-break: break-word;
+}
+
+.message-form {
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}

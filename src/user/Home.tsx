@@ -1,6 +1,6 @@
 import React from "react";
 import {Container, Card, Button} from "react-bootstrap";
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import {useSession} from "../store/session";
 
 export function Home() {
@@ -10,8 +10,7 @@ export function Home() {
     const navigate = useNavigate();
 
     if (!token) {
-        navigate("/login");
-        return null;
+        return <Navigate to="/login" replace/>;
     }
 
     const logout = () => {
@@ -24,7 +23,10 @@ export function Home() {
             <Card className="auth-card">
                 <Card.Body className="text-center">
                     <Card.Title>Bienvenue {username} 👋</Card.Title>
-                    <p className="text-muted">La messagerie arrive bientôt.</p>
+                    <p className="text-muted">La messagerie est prête.</p>
+                    <Button variant="primary" onClick={() => navigate("/messages")} className="me-2">
+                        Ouvrir la messagerie
+                    </Button>
                     <Button variant="outline-danger" onClick={logout}>Se déconnecter</Button>
                 </Card.Body>
             </Card>

@@ -19,6 +19,25 @@ export interface Session {
     externalId: string;
 }
 
+export interface PublicUser {
+    user_id: number;
+    username: string;
+    last_login?: string;
+}
+
+export interface Room {
+    room_id: number;
+    name: string;
+    created_on?: string;
+}
+
+export interface Message {
+    from: number;
+    fromName: string;
+    content: string;
+    date: string;
+}
+
 
 export interface EmptyCallback {
     (): void;
