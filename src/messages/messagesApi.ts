@@ -39,14 +39,35 @@ export async function fetchMessages(target: {type: "user" | "room", id: number})
     return (await response.json() as Message[]).reverse();
 }
 
-export async function sendMessage(content: string, target: {type: "user" | "room", id: number}): Promise<void> {
+export async function sendMessage(content: string, target: {type: "user" | "room", id: number}, image?: string): Promise<void> {
     const body = target.type === "room"
-        ? {content, targetRoomId: target.id}
-        : {content, targetUserId: target.id};
+        ? {content, image, targetRoomId: target.id}
+        : {content, image, targetUserId: target.id};
     const response = await handle(await fetch("/api/message", {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify(body),
     }));
     await response.json();
+}
+
+const MAX_SIZE = 4 * 1024 * 1024;
+
+export async function uploadImage(file: File): Promise<string> {
+    if (file.size > MAX_SIZE) {
+        throw new Error("Image trop volumineuse (max 4 Mo)");
+    }
+    const data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.onerror = () => reject(new Error("Lecture du fichier impossible"));
+        reader.readAsDataURL(file);
+    });
+    const response = await handle(await fetch("/api/upload", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({filename: file.name, contentType: file.type, data}),
+    }));
+    const {url} = await response.json() as {url: string};
+    return url;
 }

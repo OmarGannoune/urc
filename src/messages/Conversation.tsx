@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Form, Button, InputGroup} from "react-bootstrap";
 import {useMessaging} from "../store/messaging";
 import {useSession} from "../store/session";
+import {uploadImage} from "./messagesApi";
 
 export function Conversation() {
     const selection = useMessaging((state) => state.selection);
@@ -11,6 +12,9 @@ export function Conversation() {
     const myId = useSession((state) => state.id);
     const send = useMessaging((state) => state.send);
     const [content, setContent] = useState("");
+    const [image, setImage] = useState<string | undefined>(undefined);
+    const [uploading, setUploading] = useState(false);
+    const fileRef = useRef<HTMLInputElement | null>(null);
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -25,10 +29,31 @@ export function Conversation() {
         ? "# " + (rooms.find((room) => room.room_id === selection.id)?.name ?? "")
         : (users.find((user) => user.user_id === selection.id)?.username ?? "");
 
+    const handleFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (file === undefined) {
+            return;
+        }
+        setUploading(true);
+        try {
+            setImage(await uploadImage(file));
+        } catch (error) {
+            console.log(error);
+            alert((error as Error).message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        send(content);
+        if (content.trim() === "" && !image) {
+            return;
+        }
+        send(content, image);
         setContent("");
+        setImage(undefined);
     };
 
     return (
@@ -47,21 +72,47 @@ export function Conversation() {
                         <div className="message-meta">
                             {message.fromName} · {new Date(message.date).toLocaleString()}
                         </div>
-                        <div className="message-content">{message.content}</div>
+                        {message.image &&
+                            <a href={message.image} target="_blank" rel="noreferrer">
+                                <img src={message.image} alt="image" className="message-image"/>
+                            </a>
+                        }
+                        {message.content && <div className="message-content">{message.content}</div>}
                     </div>
                 ))}
                 <div ref={bottomRef}/>
             </div>
 
+            {image &&
+                <div className="image-preview">
+                    <img src={image} alt="aperçu"/>
+                    <Button size="sm" variant="outline-secondary" onClick={() => setImage(undefined)}>Retirer</Button>
+                </div>
+            }
+
             <Form onSubmit={handleSubmit} className="message-form">
-                <InputGroup>
+                <InputGroup className="mb-2">
                     <Form.Control
                         value={content}
                         onChange={(event) => setContent(event.target.value)}
-                        placeholder="Écrire un message..."
+                        placeholder="Message"
                     />
-                    <Button type="submit" variant="primary">Envoyer</Button>
+                    <Button
+                        variant="outline-primary"
+                        disabled={uploading}
+                        onClick={() => fileRef.current?.click()}
+                    >
+                        {uploading ? "Envoi..." : "Image"}
+                    </Button>
+                    <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/gif,image/webp"
+                        hidden
+                        onChange={handleFile}
+                    />
                 </InputGroup>
+                <Button type="submit" variant="primary" className="w-100">Envoyer</Button>
             </Form>
         </div>
     );

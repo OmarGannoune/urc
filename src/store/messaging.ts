@@ -18,7 +18,7 @@ interface MessagingState {
     select: (selection: Selection) => void;
     clearSelection: () => void;
     refreshMessages: () => Promise<void>;
-    send: (content: string) => Promise<void>;
+    send: (content: string, image?: string) => Promise<void>;
 }
 
 export const useMessaging = create<MessagingState>((set, get) => ({
@@ -64,13 +64,13 @@ export const useMessaging = create<MessagingState>((set, get) => ({
         }
     },
 
-    send: async (content) => {
+    send: async (content, image) => {
         const selection = get().selection;
-        if (selection === null || content.trim() === "") {
+        if (selection === null || (content.trim() === "" && !image)) {
             return;
         }
         try {
-            await sendMessage(content, selection);
+            await sendMessage(content, selection, image);
             await get().refreshMessages();
         } catch (error) {
             set({error: (error as Error).message});

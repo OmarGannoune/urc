@@ -46,9 +46,13 @@ export default async (request, response) => {
         }
 
         if (request.method === "POST") {
-            const {content, targetUserId, targetRoomId} = request.body;
-            if (!content) {
+            const {content, image, targetUserId, targetRoomId} = request.body;
+            if (!content && !image) {
                 response.status(400).json({code: "MISSING_CONTENT", message: "Message vide"});
+                return;
+            }
+            if (image && (!image.startsWith("https://") || !image.includes("blob.vercel-storage.com"))) {
+                response.status(400).json({code: "BAD_IMAGE", message: "Image invalide"});
                 return;
             }
             let key;
@@ -64,8 +68,9 @@ export default async (request, response) => {
             const message = {
                 from: user.id,
                 fromName: user.username,
-                content: content,
+                content: content ?? "",
                 date: new Date().toISOString(),
+                image: image ?? null,
             };
             await redis.lpush(key, message);
             await redis.expire(key, 86400);
